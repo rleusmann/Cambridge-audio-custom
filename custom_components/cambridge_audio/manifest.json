@@ -10,6 +10,5 @@
   "loggers": ["cambridge_audio"],
   "requirements": [
     "async_stream_magic==0.0.1"
-  ],
-  "zeroconf": ["_stream-magic._tcp."]
+  ]
 }
