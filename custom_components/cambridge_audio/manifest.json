@@ -6,6 +6,7 @@
   "documentation": "https://www.home-assistant.io/integrations/cambridge_audio",
   "integration_type": "device",
   "iot_class": "local_polling",
+  "version": "0.0.1",
   "loggers": ["cambridge_audio"],
   "requirements": [
     "async_stream_magic==0.0.1"
