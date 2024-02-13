@@ -1,0 +1,28 @@
+{
+    "config": {
+      "flow_title": "{serial_number}",
+      "step": {
+        "user": {
+          "description": "Set up your Cambridge Audio Receiver to integrate with Home Assistant.",
+          "data": {
+            "host": "[%key:common::config_flow::data::host%]"
+          },
+          "data_description": {
+            "host": "The hostname or IP address of your Cambridge Audio AVR."
+          }
+        },
+        "zeroconf_confirm": {
+          "description": "Do you want to add the Cambridge Audio Receiver with serial number `{serial_number}` to Home Assistant?",
+          "title": "Discovered Cambridge Audio Receiver"
+        }
+      },
+      "error": {
+        "cannot_connect": "[%key:common::config_flow::error::cannot_connect%]"
+      },
+      "abort": {
+        "already_configured": "[%key:common::config_flow::abort::already_configured_device%]",
+        "cannot_connect": "[%key:common::config_flow::error::cannot_connect%]"
+      }
+    }
+  }
+  

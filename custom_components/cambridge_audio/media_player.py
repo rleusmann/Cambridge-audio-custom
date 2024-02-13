@@ -1,7 +1,7 @@
 """Support for Cambridge Audio AV Receiver."""
 from __future__ import annotations
 
-import sys
+from async_stream_magic import StreamMagicError
 
 from homeassistant.components.media_player import (
     MediaPlayerEntity,
@@ -9,12 +9,13 @@ from homeassistant.components.media_player import (
 )
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.const import STATE_OFF, STATE_ON
-from homeassistant.core import HomeAssistant, callback
+from homeassistant.core import HomeAssistant
+from homeassistant.exceptions import HomeAssistantError
 from homeassistant.helpers.entity import DeviceInfo
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
 from homeassistant.helpers.update_coordinator import CoordinatorEntity
 
-from .const import DOMAIN, LOGGER
+from .const import DOMAIN
 from .coordinator import CambridgeAudioCoordinator
 
 PARALLEL_UPDATES = 1
@@ -28,11 +29,11 @@ async def async_setup_entry(
     coordinator: CambridgeAudioCoordinator = hass.data[DOMAIN][entry.entry_id]
     async_add_entities([CambridgeAudio(coordinator)])
 
-
 class CambridgeAudio(CoordinatorEntity[CambridgeAudioCoordinator], MediaPlayerEntity):
     """Representation of a Cambridge Audio Media Player Device."""
 
     _attr_has_entity_name = True
+    _attr_name = None
 
     def __init__(self, coordinator: CambridgeAudioCoordinator) -> None:
         """Initialize an Cambridge Audio entity."""
@@ -52,12 +53,10 @@ class CambridgeAudio(CoordinatorEntity[CambridgeAudioCoordinator], MediaPlayerEn
             | MediaPlayerEntityFeature.TURN_OFF
             | MediaPlayerEntityFeature.TURN_ON)
 
-    # @callback
-    # def _handle_coordinator_update(self) -> None:
-    #     """Handle updated data from the coordinator."""
-    #     self._attr_is_on = self.coordinator.data
-    #     self._attr
-    #     self.async_write_ha_state()
+    @property
+    def icon(self) -> str | None:
+        """Icon of the entity."""
+        return "mdi:audio-video"
 
     @property
     def state(self):
@@ -92,39 +91,81 @@ class CambridgeAudio(CoordinatorEntity[CambridgeAudioCoordinator], MediaPlayerEn
 
     async def async_mute_volume(self, mute):
         """Send mute command."""
-        if mute:
-            await self.coordinator.client.set_volume_mute_on()
-        else:
-            await self.coordinator.client.set_volume_mute_off()
-        await self.coordinator.async_refresh()
+        try:
+            if mute:
+                await self.coordinator.client.set_volume_mute_on()
+            else:
+                await self.coordinator.client.set_volume_mute_off()
+        except StreamMagicError as error:
+            raise HomeAssistantError(
+            "An error occurred while updating the Elgato Light"
+        ) from error
+        finally:
+            await self.coordinator.async_refresh()
 
     async def async_turn_on(self):
         """Turn the media player on."""
-        await self.coordinator.client.set_power_on()
-        await self.coordinator.async_refresh()
+        try:
+            await self.coordinator.client.set_power_on()
+        except StreamMagicError as error:
+            raise HomeAssistantError(
+            "An error occurred while updating the Elgato Light"
+        ) from error
+        finally:
+            await self.coordinator.async_refresh()
 
     async def async_turn_off(self):
         """Turn the media player off."""
-        await self.coordinator.client.set_power_off()
-        await self.coordinator.async_refresh()
+        try:
+            await self.coordinator.client.set_power_off()
+        except StreamMagicError as error:
+            raise HomeAssistantError(
+            "An error occurred while updating the Elgato Light"
+        ) from error
+        finally:
+            await self.coordinator.async_refresh()
 
     async def async_set_volume_level(self, volume):
         """Set volume level, range 0..1."""
-        await self.coordinator.client.set_volume_percent(int(volume * 100))
-        await self.coordinator.async_refresh()
+        try:
+            await self.coordinator.client.set_volume_percent(int(volume * 100))
+        except StreamMagicError as error:
+            raise HomeAssistantError(
+            "An error occurred while updating the Elgato Light"
+        ) from error
+        finally:
+            await self.coordinator.async_refresh()
 
     async def async_volume_up(self):
         """Set volume level step up."""
-        await self.coordinator.client.set_volume_step_up()
-        await self.coordinator.async_refresh()
+        try:
+            await self.coordinator.client.set_volume_step_up()
+        except StreamMagicError as error:
+            raise HomeAssistantError(
+            "An error occurred while updating the Elgato Light"
+        ) from error
+        finally:
+            await self.coordinator.async_refresh()
 
     async def async_volume_down(self):
         """Set volume level step down."""
-        await self.coordinator.client.set_volume_step_down()
-        await self.coordinator.async_refresh()
+        try:
+            await self.coordinator.client.set_volume_step_down()
+        except StreamMagicError as error:
+            raise HomeAssistantError(
+            "An error occurred while updating the Elgato Light"
+        ) from error
+        finally:
+            await self.coordinator.async_refresh()
 
     async def async_select_source(self, source):
         """Select input source."""
-        source_object = next((item for item in self.coordinator.data.sources if item.name == source), None)
-        await self.coordinator.client.set_source(source_object)
-        await self.coordinator.async_refresh()
+        try:
+            source_object = next((item for item in self.coordinator.data.sources if item.name == source), None)
+            await self.coordinator.client.set_source(source_object)
+        except StreamMagicError as error:
+            raise HomeAssistantError(
+            "An error occurred while updating the Elgato Light"
+        ) from error
+        finally:
+            await self.coordinator.async_refresh()

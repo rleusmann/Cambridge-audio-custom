@@ -1,7 +1,9 @@
 """DataUpdateCoordinator for Cambridge Audio."""
 
+from asyncio import sleep
 from dataclasses import dataclass
 
+from aioretry import RetryInfo, RetryPolicyStrategy, retry
 from async_stream_magic import Info, Source, State, StreamMagic, StreamMagicError
 
 from homeassistant.config_entries import ConfigEntry
@@ -38,6 +40,11 @@ class CambridgeAudioCoordinator(DataUpdateCoordinator[CambridgeAudioData]):
             update_interval=SCAN_INTERVAL,
         )
 
+    def _retry_policy(self, info: RetryInfo) -> RetryPolicyStrategy:  # noqa: D102
+        LOGGER.info("Retry updating Cambridge Audio device data")
+        return info.fails > 10, info.fails * 0.1
+
+    @retry('_retry_policy')
     async def _async_update_data(self) -> CambridgeAudioData:
         """Fetch data from API endpoint.
 
