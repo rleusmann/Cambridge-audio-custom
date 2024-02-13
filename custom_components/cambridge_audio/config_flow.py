@@ -6,7 +6,7 @@ from typing import Any
 from async_stream_magic import StreamMagic, StreamMagicError
 import voluptuous as vol
 
-from homeassistant.components import zeroconf
+from homeassistant.components import onboarding, zeroconf
 from homeassistant.config_entries import ConfigFlow
 from homeassistant.const import CONF_HOST
 from homeassistant.core import callback
@@ -53,19 +53,20 @@ class CambridgeAudioFlowHandler(ConfigFlow, domain=DOMAIN):
         except StreamMagicError:
             return self.async_abort(reason="cannot_connect")
 
+        if not onboarding.async_is_onboarded(self.hass):
+            return self._async_create_entry()
+
         self._set_confirm_only()
         return self.async_show_form(
             step_id="zeroconf_confirm",
             description_placeholders={"serial_number": self.unit_id},
         )
 
-
     async def async_step_zeroconf_confirm(
         self, _: dict[str, Any] | None = None
     ) -> FlowResult:
         """Handle a flow initiated by zeroconf."""
         return self._async_create_entry()
-
 
     @callback
     def _async_show_setup_form(
