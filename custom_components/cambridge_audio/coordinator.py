@@ -1,6 +1,5 @@
 """DataUpdateCoordinator for Cambridge Audio."""
 
-from asyncio import sleep
 from dataclasses import dataclass
 
 from aioretry import RetryInfo, RetryPolicyStrategy, retry
