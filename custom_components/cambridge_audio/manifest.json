@@ -9,8 +9,7 @@
   "version": "0.0.1",
   "loggers": ["cambridge_audio"],
   "requirements": [
-    "async_stream_magic==0.1.2",
-    "aioretry==5.0.2"
+    "async_stream_magic==0.1.5"
   ],
   "zeroconf": ["_stream-magic._tcp.local."]
 }

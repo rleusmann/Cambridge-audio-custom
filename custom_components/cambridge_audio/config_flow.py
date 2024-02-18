@@ -23,6 +23,7 @@ class CambridgeAudioFlowHandler(ConfigFlow, domain=DOMAIN):
 
     host: str
     unit_id: str
+    name: str
 
     async def async_step_user(
             self, user_input: dict[str, Any] | None = None
@@ -107,3 +108,4 @@ class CambridgeAudioFlowHandler(ConfigFlow, domain=DOMAIN):
             updates={CONF_HOST: self.host,}
         )
         self.unit_id = info.unit_id
+        self.name = info.name
