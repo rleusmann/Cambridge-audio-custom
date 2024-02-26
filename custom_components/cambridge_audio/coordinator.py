@@ -41,7 +41,7 @@ class CambridgeAudioCoordinator(DataUpdateCoordinator[CambridgeAudioData]):
 
     def _retry_policy(self, info: RetryInfo) -> RetryPolicyStrategy:  # noqa: D102
         LOGGER.info("Retry updating Cambridge Audio device data")
-        return info.fails > 10, info.fails * 0.1
+        return info.fails > 20, info.fails * 0.1
 
     @retry('_retry_policy')
     async def _async_update_data(self) -> CambridgeAudioData:
