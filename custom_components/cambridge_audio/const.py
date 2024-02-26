@@ -10,8 +10,4 @@ DOMAIN: Final = "cambridge_audio"
 ATTR_UNIT_ID: Final = "unit_id"
 
 LOGGER = logging.getLogger(__package__)
-SCAN_INTERVAL = timedelta(seconds=5)
-
-# Attributes
-
-# Services
+SCAN_INTERVAL = timedelta(seconds=15)

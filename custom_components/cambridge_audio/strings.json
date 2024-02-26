@@ -1,11 +1,11 @@
 {
     "config": {
-      "flow_title": "{serial_number}",
+      "title": "{serial_number}",
       "step": {
         "user": {
           "description": "Set up your Cambridge Audio Receiver to integrate with Home Assistant.",
           "data": {
-            "host": "[%key:common::config_flow::data::host%]"
+            "host": "Host"
           },
           "data_description": {
             "host": "The hostname or IP address of your Cambridge Audio AVR."
