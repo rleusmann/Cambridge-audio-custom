@@ -87,7 +87,6 @@ class CambridgeAudio(CoordinatorEntity[CambridgeAudioCoordinator], MediaPlayerEn
     def source(self):
         """Return the current input source."""
         return next((item.name for item in self.coordinator.data.sources if item.id == self.coordinator.data.state.source), None)
-        #return self.coordinator.data.state.source
 
     async def async_mute_volume(self, mute):
         """Send mute command."""
