@@ -4,6 +4,7 @@ from __future__ import annotations
 from async_stream_magic import StreamMagicError
 
 from homeassistant.components.media_player import (
+    MediaPlayerDeviceClass,
     MediaPlayerEntity,
     MediaPlayerEntityFeature,
 )
@@ -34,6 +35,14 @@ class CambridgeAudio(CoordinatorEntity[CambridgeAudioCoordinator], MediaPlayerEn
 
     _attr_has_entity_name = True
     _attr_name = None
+    _attr_supported_features = (
+            MediaPlayerEntityFeature.SELECT_SOURCE
+            | MediaPlayerEntityFeature.VOLUME_SET
+            | MediaPlayerEntityFeature.VOLUME_MUTE
+            | MediaPlayerEntityFeature.VOLUME_STEP
+            | MediaPlayerEntityFeature.TURN_OFF
+            | MediaPlayerEntityFeature.TURN_ON)
+    _attr_device_class = MediaPlayerDeviceClass.RECEIVER
 
     def __init__(self, coordinator: CambridgeAudioCoordinator) -> None:
         """Initialize an Cambridge Audio entity."""
@@ -45,13 +54,6 @@ class CambridgeAudio(CoordinatorEntity[CambridgeAudioCoordinator], MediaPlayerEn
             model = coordinator.data.info.model,
             name = coordinator.data.info.name)
         self._attr_unique_id = coordinator.data.info.unit_id
-        self._attr_supported_features = (
-            MediaPlayerEntityFeature.SELECT_SOURCE
-            | MediaPlayerEntityFeature.VOLUME_SET
-            | MediaPlayerEntityFeature.VOLUME_MUTE
-            | MediaPlayerEntityFeature.VOLUME_STEP
-            | MediaPlayerEntityFeature.TURN_OFF
-            | MediaPlayerEntityFeature.TURN_ON)
 
     @property
     def icon(self) -> str | None:
@@ -82,6 +84,11 @@ class CambridgeAudio(CoordinatorEntity[CambridgeAudioCoordinator], MediaPlayerEn
         if volume_percent is None:
             return None
         return float(volume_percent) / 100
+    
+    @property
+    def media_title(self) -> str | None:
+        """Title of current playing media."""
+        return next((item.name for item in self.coordinator.data.sources if item.id == self.coordinator.data.state.source), None)
 
     @property
     def source(self):
